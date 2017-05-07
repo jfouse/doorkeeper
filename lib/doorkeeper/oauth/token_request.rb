@@ -1,6 +1,8 @@
 module Doorkeeper
   module OAuth
     class TokenRequest
+      include Hooks
+
       attr_accessor :pre_auth, :resource_owner, :client
 
       def initialize(pre_auth, resource_owner)
@@ -10,12 +12,15 @@ module Doorkeeper
       end
 
       def authorize
+        before_action_hooks
         if pre_auth.authorizable?
           auth = Authorization::Token.new(pre_auth, resource_owner)
           auth.issue_token
           @response = CodeResponse.new pre_auth,
                                        auth,
                                        response_on_fragment: true
+          after_action_hooks
+          @response
         else
           @response = error_response
         end

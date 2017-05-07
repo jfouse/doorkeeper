@@ -1,12 +1,16 @@
 module Doorkeeper
   module OAuth
     module RequestConcern
+      include Hooks
+
       def authorize
         validate
+        before_action_hooks
         if valid?
           before_successful_response
           @response = TokenResponse.new(access_token)
           after_successful_response
+          after_action_hooks
           @response
         else
           @response = ErrorResponse.from_request(self)
