@@ -22,8 +22,23 @@ module Doorkeeper::OAuth
       double :owner, id: 7866
     end
 
+    let(:hook_proc) { Proc.new { } }
+
+    let(:hook_config) do
+      {
+        before_token_request: hook_proc,
+        after_token_request: hook_proc
+      }
+    end
+
     subject do
       TokenRequest.new(pre_auth, owner)
+    end
+
+    it 'calls custom action hooks' do
+      Doorkeeper.configuration.instance_variable_set('@action_hooks', hook_config )
+      expect(hook_proc).to receive(:call).twice
+      subject.authorize
     end
 
     it 'creates an access token' do

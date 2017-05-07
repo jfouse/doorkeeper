@@ -29,6 +29,15 @@ module Doorkeeper::OAuth
         refresh_token_enabled?: false
     end
 
+    let(:hook_proc) { Proc.new { } }
+
+    let(:hook_config) do
+      {
+        before_base_request: hook_proc,
+        after_base_request: hook_proc
+      }
+    end
+
     subject do
       BaseRequest.new
     end
@@ -36,6 +45,7 @@ module Doorkeeper::OAuth
     describe "#authorize" do
       before do
         allow(subject).to receive(:access_token).and_return(access_token)
+        Doorkeeper.configuration.instance_variable_set('@action_hooks', hook_config )
       end
 
       it "validates itself" do
@@ -46,6 +56,11 @@ module Doorkeeper::OAuth
       context "valid" do
         before do
           allow(subject).to receive(:valid?).and_return(true)
+        end
+
+        it "calls custom action hooks" do
+          expect(hook_proc).to receive(:call).twice
+          subject.authorize
         end
 
         it "calls callback methods" do

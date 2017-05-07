@@ -100,6 +100,25 @@ Doorkeeper.configure do
   #
   # grant_flows %w(authorization_code client_credentials)
 
+  # Provide custom hook actions (e.g. logging) at specific authorization
+  # or grant flow points. Before and after hooks are available for the
+  # following actions:
+  #   client_credentials_request
+  #   authorization_code_request
+  #   password_access_token_request
+  #   refresh_token_request
+  #   code_request
+  #   token_request
+  #
+  # Hooks must be provided as Procs.  For example, if you want
+  # to log whenever a token is refreshed...
+  #
+  # action_hooks {
+  #   before_refresh_token_request: Proc.new { Rails.logger.info("token refreshed") }
+  # }
+  #
+  # action_hooks {}
+
   # Under some circumstances you might want to have applications auto-approved,
   # so that the user skips the authorization step.
   # For example if dealing with a trusted application.

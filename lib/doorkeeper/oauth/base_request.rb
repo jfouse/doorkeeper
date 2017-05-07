@@ -2,13 +2,16 @@ module Doorkeeper
   module OAuth
     class BaseRequest
       include Validations
+      include Hooks
 
       def authorize
+        before_action_hooks
         validate
         if valid?
           before_successful_response
           @response = TokenResponse.new(access_token)
           after_successful_response
+          after_action_hooks
           @response
         else
           @response = ErrorResponse.from_request(self)
@@ -45,6 +48,7 @@ module Doorkeeper
 
       def after_successful_response
       end
+
     end
   end
 end

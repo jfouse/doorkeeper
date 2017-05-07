@@ -16,8 +16,23 @@ module Doorkeeper::OAuth
 
     let(:owner) { double :owner, id: 8900 }
 
+    let(:hook_proc) { Proc.new { } }
+
+    let(:hook_config) do
+      {
+        before_code_request: hook_proc,
+        after_code_request: hook_proc
+      }
+    end
+
     subject do
       CodeRequest.new(pre_auth, owner)
+    end
+
+    it 'calls custom action hooks' do
+      Doorkeeper.configuration.instance_variable_set('@action_hooks', hook_config )
+      expect(hook_proc).to receive(:call).twice
+      subject.authorize
     end
 
     it 'creates an access grant' do
