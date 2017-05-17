@@ -1,3 +1,5 @@
+require 'protected_attributes'
+
 class User < ActiveRecord::Base
   if respond_to?(:attr_accessible)
     attr_accessible :name, :password

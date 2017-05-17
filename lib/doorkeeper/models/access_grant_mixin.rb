@@ -1,3 +1,5 @@
+require 'protected_attributes'
+
 module Doorkeeper
   module AccessGrantMixin
     extend ActiveSupport::Concern
